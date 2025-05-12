@@ -34,7 +34,7 @@ def scraper_function(chave_de_acesso: str):
         tabela = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "tabResult"))
         )
-        forma_de_pagamento = driver.find_element(By.XPATH, '/html/body/div[1]/div[4]/div/div[2]/div[1]/div[3]/div[4]/label').text
+        forma_de_pagamento = driver.find_element(By.CSS_SELECTOR, 'div#linhaTotal label').text
         print(f"Forma de pagamento: {forma_de_pagamento}")
         
         li_info = driver.find_element(By.XPATH, '/html/body/div[1]/div[4]/div/div[2]/div[2]/div[1]/div/ul/li')

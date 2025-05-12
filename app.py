@@ -1,6 +1,7 @@
 
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 from mongo import get_dataframe
 from scraper import scraper_function
 
@@ -47,13 +48,36 @@ if df.empty:
 else:
     #Gráfico de Produtos mais vendidos
     st.subheader("Produtos mais vendidos")
-    produtos_mais_vendidos = df['produto'].value_counts()
-    st.bar_chart(produtos_mais_vendidos)
+    produtos_mais_vendidos = df['produto'].value_counts().head(15).reset_index()
+    produtos_mais_vendidos.columns = ['Produto', 'Quantidade']
+    fig = px.bar(
+        produtos_mais_vendidos,
+        x='Quantidade',
+        y='Produto',
+        orientation='h',
+        color='Quantidade',
+        color_continuous_scale='Viridis',  # <-- degradê bonitão
+        labels={'Quantidade': 'Quantidade Vendida', 'Produto': 'Produto'},
+        title='Top 15 Produtos Mais Vendidos'
+    )
+    fig.update_layout(yaxis={'categoryorder':'total ascending'})
+    st.plotly_chart(fig, use_container_width=True)
 
     #Gráfico de Total de vendas por dia/semana/mês
     st.subheader("Total de vendas por dia/semana/mês")
-    total_vendas = df.groupby(df['data'].dt.to_period('M')).agg({'total_da_venda': 'sum'}).reset_index()
-    st.line_chart(total_vendas['total_da_venda'])
+    periodo = st.selectbox(
+        "Selecione o período:",
+        ["Dia", "Mês"]
+    )
+    if periodo == "Dia":
+        total_vendas = df.groupby(df['data'].dt.to_period('D')).agg({'total_da_venda': 'sum'}).reset_index()
+    elif periodo == "Mês":
+        total_vendas = df.groupby(df['data'].dt.to_period('M')).agg({'total_da_venda': 'sum'}).reset_index()
+    # Converter Period para string para o gráfico
+    total_vendas['data'] = total_vendas['data'].astype(str)
+
+    # Exibir o gráfico
+    st.bar_chart(total_vendas.set_index('data')['total_da_venda'])
 
     #Gráfico de Comparativo entre formas de pagamento
     st.subheader("Comparativo entre formas de pagamento")
