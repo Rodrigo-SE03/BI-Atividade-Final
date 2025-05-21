@@ -203,12 +203,27 @@ else:
     st.bar_chart(formas_pagamento)
 
     st.subheader("Valor médio por venda")
-valor_medio = df['total_da_venda'].mean()
+    valor_medio = df['total_da_venda'].mean()
+    # Exibir texto com fonte Calibri negrito via HTML
+    st.markdown(
+        f"<p style='font-family:Calibri; font-weight:bold; font-size:20px;'>"
+        f"Valor médio por venda: R$ {valor_medio:.2f}"
+        f"</p>",
+        unsafe_allow_html=True
+    )
 
-# Exibir texto com fonte Calibri negrito via HTML
-st.markdown(
-    f"<p style='font-family:Calibri; font-weight:bold; font-size:20px;'>"
-    f"Valor médio por venda: R$ {valor_medio:.2f}"
-    f"</p>",
-    unsafe_allow_html=True
-)
+
+    tabela_produtos = (
+        df.groupby('produto')
+        .size()
+        .reset_index(name='Quantidade')
+        .sort_values(by='Quantidade', ascending=False)
+    )
+
+    # Exibe a tabela
+    st.subheader("Todos os Produtos Vendidos (Ordenados por Quantidade)")
+
+    st.dataframe(
+        tabela_produtos.style.format({'Quantidade': '{:,}'}),
+        use_container_width=True
+    )
