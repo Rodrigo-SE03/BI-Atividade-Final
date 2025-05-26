@@ -25,11 +25,11 @@ def by_forma_pagamento(df, forma_pagamento):
     return filtered_df
 
 
-st.title("Análise de Vendas")
-
+st.title("Análise de Compras")
+st.write("Disciplina de Business Intelligence - Luiz Felipe, Matheus Iverson, Paulo Vitor, Pedro Paulo Carvalho e Rodrigo Santana")
 #aff sidebar to add code
 st.sidebar.title("Adicionar Nota")
-st.sidebar.write("Adicione uma nova nota de venda")
+st.sidebar.write("Adicione uma nova nota de compra")
 produto = st.sidebar.text_input("Código da Nota Fiscal:", "")
 if st.sidebar.button("Adicionar Nota"):
     if produto:
@@ -86,21 +86,21 @@ else:
 if df.empty:
     st.warning("Nenhum dado encontrado. Verifique a conexão com o banco de dados.")
 else:
-        # Gráfico de Produtos mais vendidos
-    st.subheader("Produtos mais vendidos")
+        # Gráfico de Produtos mais comprados
+    st.subheader("Produtos mais comprados")
 
-    produtos_mais_vendidos = df['produto'].value_counts().head(15).reset_index()
-    produtos_mais_vendidos.columns = ['Produto', 'Quantidade']
+    produtos_mais_comprados = df['produto'].value_counts().head(15).reset_index()
+    produtos_mais_comprados.columns = ['Produto', 'Quantidade']
 
     fig = px.bar(
-        produtos_mais_vendidos,
+        produtos_mais_comprados,
         x='Quantidade',
         y='Produto',
         orientation='h',
         color='Quantidade',
         color_continuous_scale='Viridis',
-        labels={'Quantidade': 'Quantidade Vendida', 'Produto': 'Produto'},
-        title='Top 15 Produtos Mais Vendidos'
+        labels={'Quantidade': 'Quantidade Comprada', 'Produto': 'Produto'},
+        title='Top 15 Produtos Mais Comprados'
     )
 
     # Ordenar y pelo total
@@ -136,20 +136,20 @@ else:
 
     st.plotly_chart(fig, use_container_width=True)
 
-    #Gráfico de Produtos menos vendidos
-    st.subheader("Produtos menos vendidos")
-    produtos_menos_vendidos = df['produto'].value_counts().tail(15).reset_index()
-    produtos_menos_vendidos.columns = ['Produto', 'Quantidade']
+    #Gráfico de Produtos menos comprados
+    st.subheader("Produtos menos comprados")
+    produtos_menos_comprados = df['produto'].value_counts().tail(15).reset_index()
+    produtos_menos_comprados.columns = ['Produto', 'Quantidade']
     fig = px.bar(
-        produtos_menos_vendidos,
+        produtos_menos_comprados,
         x='Quantidade',
         y='Produto',
         orientation='h',
         color='Quantidade',
         color_continuous_scale='Viridis',
-        labels={'Quantidade': 'Quantidade Vendida', 'Produto': 'Produto'},
-        title='Top 15 Produtos Menos Vendidos'
-        )
+        labels={'Quantidade': 'Quantidade Comprada', 'Produto': 'Produto'},
+        title='Top 15 Produtos Menos Comprados'
+    )
     fig.update_layout(yaxis={'categoryorder':'total ascending'})
 
     # Aplicar fonte Calibri negrito nos ticks e títulos dos eixos
@@ -181,33 +181,33 @@ else:
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    # Gráfico de Total de vendas por dia/semana/mês
-    st.subheader("Total de vendas por dia/semana/mês")
+    # Gráfico de Total de compras por dia/semana/mês
+    st.subheader("Total de Compras por dia/semana/mês")
     periodo = st.selectbox(
         "Selecione o período:",
         ["Dia", "Mês"]
     )
     if periodo == "Dia":
-        total_vendas = df.groupby(df['data'].dt.to_period('D')).agg({'total_da_venda': 'sum'}).reset_index()
+        total_compras = df.groupby(df['data'].dt.to_period('D')).agg({'total_da_venda': 'sum'}).reset_index()
     elif periodo == "Mês":
-        total_vendas = df.groupby(df['data'].dt.to_period('M')).agg({'total_da_venda': 'sum'}).reset_index()
+        total_compras = df.groupby(df['data'].dt.to_period('M')).agg({'total_da_venda': 'sum'}).reset_index()
     # Converter Period para string para o gráfico
-    total_vendas['data'] = total_vendas['data'].astype(str)
-    
+    total_compras['data'] = total_compras['data'].astype(str)
+
     # Exibir o gráfico
-    st.bar_chart(total_vendas.set_index('data')['total_da_venda'])
+    st.bar_chart(total_compras.set_index('data')['total_da_venda'])
 
     #Gráfico de Comparativo entre formas de pagamento
     st.subheader("Comparativo entre formas de pagamento")
     formas_pagamento = df['forma_pagamento'].value_counts()
     st.bar_chart(formas_pagamento)
 
-    st.subheader("Valor médio por venda")
+    st.subheader("Valor médio por compra")
     valor_medio = df['total_da_venda'].mean()
     # Exibir texto com fonte Calibri negrito via HTML
     st.markdown(
         f"<p style='font-family:Calibri; font-weight:bold; font-size:20px;'>"
-        f"Valor médio por venda: R$ {valor_medio:.2f}"
+        f"Valor médio por compra: R$ {valor_medio:.2f}"
         f"</p>",
         unsafe_allow_html=True
     )
